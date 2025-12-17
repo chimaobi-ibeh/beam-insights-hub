@@ -18,6 +18,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Save, Eye } from "lucide-react";
+import RichTextEditor from "@/components/editor/RichTextEditor";
 
 interface Author {
   id: string;
@@ -261,14 +262,11 @@ const PostEditor = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="body">Body (Markdown)</Label>
-                  <Textarea
-                    id="body"
-                    placeholder="Write your post content here using Markdown..."
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    rows={20}
-                    className="font-mono text-sm"
+                  <Label htmlFor="body">Body</Label>
+                  <RichTextEditor
+                    content={body}
+                    onChange={setBody}
+                    placeholder="Write your post content here..."
                   />
                 </div>
               </CardContent>
