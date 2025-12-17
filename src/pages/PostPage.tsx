@@ -136,46 +136,10 @@ const PostPage = () => {
               alt={postData.title}
               className="w-full aspect-video object-cover rounded-lg mb-8"
             />
-            <div className="prose prose-lg max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-accent">
-              {postData.body.split("\n").map((paragraph, index) => {
-                if (paragraph.startsWith("## ")) {
-                  return (
-                    <h2 key={index} className="text-2xl font-bold mt-8 mb-4">
-                      {paragraph.replace("## ", "")}
-                    </h2>
-                  );
-                }
-                if (paragraph.startsWith("### ")) {
-                  return (
-                    <h3 key={index} className="text-xl font-semibold mt-6 mb-3">
-                      {paragraph.replace("### ", "")}
-                    </h3>
-                  );
-                }
-                if (paragraph.startsWith("- ")) {
-                  return (
-                    <li key={index} className="ml-6 text-muted-foreground">
-                      {paragraph.replace("- ", "")}
-                    </li>
-                  );
-                }
-                if (paragraph.match(/^\d\. /)) {
-                  return (
-                    <li key={index} className="ml-6 text-muted-foreground list-decimal">
-                      {paragraph.replace(/^\d\. /, "")}
-                    </li>
-                  );
-                }
-                if (paragraph.trim()) {
-                  return (
-                    <p key={index} className="mb-4 text-muted-foreground leading-relaxed">
-                      {paragraph}
-                    </p>
-                  );
-                }
-                return null;
-              })}
-            </div>
+            <div 
+              className="prose prose-lg max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-accent prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
+              dangerouslySetInnerHTML={{ __html: postData.body }}
+            />
           </article>
 
           {/* Sidebar */}
