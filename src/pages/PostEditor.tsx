@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Layout from "@/components/layout/Layout";
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Eye } from "lucide-react";
+import { ArrowLeft, Save, Eye, Upload, X, ImageIcon } from "lucide-react";
 import RichTextEditor from "@/components/editor/RichTextEditor";
 
 interface Author {
@@ -52,6 +52,8 @@ const PostEditor = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [postLoading, setPostLoading] = useState(!isNew);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -118,6 +120,53 @@ const PostEditor = () => {
       setSlug(generateSlug(value));
     }
   };
+
+  const uploadFeaturedImage = useCallback(async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Error", description: "Please upload an image file", variant: "destructive" });
+      return;
+    }
+
+    setIsUploadingImage(true);
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `featured/${fileName}`;
+
+    const { error } = await supabase.storage
+      .from("blog-images")
+      .upload(filePath, file);
+
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      setIsUploadingImage(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("blog-images")
+      .getPublicUrl(filePath);
+
+    setFeaturedImage(urlData.publicUrl);
+    setIsUploadingImage(false);
+    toast({ title: "Success", description: "Featured image uploaded" });
+  }, [toast]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) uploadFeaturedImage(file);
+  }, [uploadFeaturedImage]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -297,13 +346,58 @@ const PostEditor = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="featured-image">Featured Image URL</Label>
-                  <Input
-                    id="featured-image"
-                    placeholder="https://..."
-                    value={featuredImage}
-                    onChange={(e) => setFeaturedImage(e.target.value)}
-                  />
+                  <Label>Featured Image</Label>
+                  {featuredImage ? (
+                    <div className="relative group">
+                      <img
+                        src={featuredImage}
+                        alt="Featured"
+                        className="w-full h-40 object-cover rounded-md border"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => setFeaturedImage("")}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${
+                        isDragging
+                          ? "border-primary bg-primary/5"
+                          : "border-muted-foreground/25 hover:border-primary/50"
+                      }`}
+                      onClick={() => document.getElementById("featured-upload")?.click()}
+                    >
+                      <input
+                        id="featured-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadFeaturedImage(file);
+                        }}
+                      />
+                      {isUploadingImage ? (
+                        <p className="text-sm text-muted-foreground">Uploading...</p>
+                      ) : (
+                        <>
+                          <ImageIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                          <p className="text-sm text-muted-foreground">
+                            Drag & drop or click to upload
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="author">Author</Label>
