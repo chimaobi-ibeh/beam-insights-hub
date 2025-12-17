@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, PenSquare } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, isEditor } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -44,6 +46,15 @@ const Header = () => {
           >
             Main Site
           </a>
+          {user && (
+            <Link 
+              to="/editor" 
+              className="text-sm font-medium text-accent hover:text-accent/80 transition-colors flex items-center gap-1"
+            >
+              <PenSquare className="h-4 w-4" />
+              {isEditor ? "Editor" : "Dashboard"}
+            </Link>
+          )}
           <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <a href="https://calendly.com/beamxsolutions" target="_blank" rel="noopener noreferrer">
               Contact Us
@@ -94,6 +105,16 @@ const Header = () => {
             >
               Main Site
             </a>
+            {user && (
+              <Link 
+                to="/editor" 
+                className="text-sm font-medium text-accent hover:text-accent/80 py-2 flex items-center gap-1"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <PenSquare className="h-4 w-4" />
+                {isEditor ? "Editor" : "Dashboard"}
+              </Link>
+            )}
             <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground w-fit">
               <a href="https://calendly.com/beamxsolutions" target="_blank" rel="noopener noreferrer">
                 Contact Us
