@@ -137,7 +137,7 @@ const PostPage = () => {
               className="w-full aspect-video object-cover rounded-lg mb-8"
             />
             <div 
-              className="prose prose-lg max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-accent prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
+              className="blog-content prose prose-lg max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-accent prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
               dangerouslySetInnerHTML={{ __html: postData.body }}
             />
           </article>
