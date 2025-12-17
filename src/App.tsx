@@ -11,6 +11,7 @@ import CategoriesPage from "./pages/CategoriesPage";
 import AuthPage from "./pages/AuthPage";
 import EditorDashboard from "./pages/EditorDashboard";
 import PostEditor from "./pages/PostEditor";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/editor" element={<EditorDashboard />} />
             <Route path="/editor/post/:id" element={<PostEditor />} />
+            <Route path="/admin" element={<AdminPanel />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

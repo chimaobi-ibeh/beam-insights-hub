@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Eye, LogOut, FileText, Users, FolderOpen } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, LogOut, FileText, Users, FolderOpen, Shield } from "lucide-react";
 
 interface Post {
   id: string;
@@ -28,7 +28,7 @@ interface Post {
 }
 
 const EditorDashboard = () => {
-  const { user, profile, isEditor, isLoading, signOut } = useAuth();
+  const { user, profile, isEditor, isAdmin, isLoading, signOut } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
   const [stats, setStats] = useState({ posts: 0, authors: 0, categories: 0 });
@@ -141,9 +141,18 @@ const EditorDashboard = () => {
             </h1>
             <p className="text-white/70 text-sm">Welcome, {profile?.full_name || "Editor"}</p>
           </div>
-          <Button onClick={handleSignOut} variant="outline" size="sm" className="bg-transparent border-white/20 text-white hover:bg-white/10">
-            <LogOut className="h-4 w-4 mr-2" /> Sign Out
-          </Button>
+          <div className="flex gap-2">
+            {isAdmin && (
+              <Button asChild variant="outline" size="sm" className="bg-transparent border-white/20 text-white hover:bg-white/10">
+                <Link to="/admin">
+                  <Shield className="h-4 w-4 mr-2" /> Admin Panel
+                </Link>
+              </Button>
+            )}
+            <Button onClick={handleSignOut} variant="outline" size="sm" className="bg-transparent border-white/20 text-white hover:bg-white/10">
+              <LogOut className="h-4 w-4 mr-2" /> Sign Out
+            </Button>
+          </div>
         </div>
       </div>
 
