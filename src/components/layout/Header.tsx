@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, PenSquare } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import beamxLogo from "@/assets/beamx-logo.png";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -15,9 +16,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <span className="font-display text-xl font-bold text-primary">
-            BEAM<span className="text-accent">X</span>
-          </span>
+          <img src={beamxLogo} alt="BeamX Solutions" className="h-8 w-auto" />
           <span className="text-sm font-medium text-muted-foreground">Blog</span>
         </Link>
 
