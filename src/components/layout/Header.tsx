@@ -15,9 +15,9 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" aria-label="BeamX Blog" className="flex items-center gap-2">
           <img src={beamxLogo} alt="BeamX Solutions" className="h-8 w-auto" />
-          <span className="text-sm font-medium text-muted-foreground">Blog</span>
+          <span className="sr-only">BeamX Blog</span>
         </Link>
 
         {/* Desktop Navigation */}

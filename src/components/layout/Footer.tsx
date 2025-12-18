@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import beamxLogo from "@/assets/beamx-logo-white.png";
 
 const Footer = () => {
   return (
@@ -8,10 +9,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <span className="font-display text-xl font-bold">
-                BEAM<span className="text-accent">X</span>
-              </span>
-              <span className="text-sm font-medium text-primary-foreground/70">Blog</span>
+              <img src={beamxLogo} alt="BeamX Solutions" className="h-8 w-auto" />
             </Link>
             <p className="text-sm text-primary-foreground/70 max-w-md">
               Insights on business intelligence, AI, and data analytics from the experts at BeamX Solutions.
