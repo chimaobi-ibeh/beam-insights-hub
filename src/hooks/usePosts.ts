@@ -100,3 +100,69 @@ export const useCategories = () => {
     },
   });
 };
+
+export const useCategoriesWithPostCount = () => {
+  return useQuery({
+    queryKey: ["categories-with-post-count"],
+    queryFn: async () => {
+      // Get all categories
+      const { data: categories, error: catError } = await supabase
+        .from("categories")
+        .select("*")
+        .order("name");
+
+      if (catError) throw catError;
+
+      // Get all published posts with their category_id
+      const { data: posts, error: postsError } = await supabase
+        .from("posts")
+        .select("id, category_id")
+        .eq("is_published", true);
+
+      if (postsError) throw postsError;
+
+      // Count posts per category
+      const categoriesWithCount = categories?.map(category => ({
+        ...category,
+        postCount: posts?.filter(post => post.category_id === category.id).length || 0
+      }));
+
+      return categoriesWithCount;
+    },
+  });
+};
+
+export const usePostsByCategory = (categorySlug: string) => {
+  return useQuery({
+    queryKey: ["posts-by-category", categorySlug],
+    queryFn: async () => {
+      // First get the category ID from slug
+      const { data: category, error: catError } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("slug", categorySlug)
+        .maybeSingle();
+
+      if (catError) throw catError;
+      if (!category) return { category: null, posts: [] };
+
+      // Then get posts for that category
+      const { data: posts, error: postsError } = await supabase
+        .from("posts")
+        .select(`
+          id, slug, title, excerpt, body, featured_image, tags, read_time, 
+          is_published, published_at, created_at,
+          authors(id, name, bio, avatar_url, slug),
+          categories(id, name, slug)
+        `)
+        .eq("category_id", category.id)
+        .eq("is_published", true)
+        .order("published_at", { ascending: false });
+
+      if (postsError) throw postsError;
+
+      return { category, posts: posts as PostWithAuthor[] };
+    },
+    enabled: !!categorySlug,
+  });
+};

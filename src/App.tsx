@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import PostPage from "./pages/PostPage";
 import AboutPage from "./pages/AboutPage";
 import CategoriesPage from "./pages/CategoriesPage";
+import CategoryPage from "./pages/CategoryPage";
 import AuthPage from "./pages/AuthPage";
 import EditorDashboard from "./pages/EditorDashboard";
 import PostEditor from "./pages/PostEditor";
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/post/:slug" element={<PostPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/category/:slug" element={<CategoryPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/editor" element={<EditorDashboard />} />
             <Route path="/editor/post/:id" element={<PostEditor />} />
