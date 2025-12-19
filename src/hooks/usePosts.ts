@@ -166,3 +166,34 @@ export const usePostsByCategory = (categorySlug: string) => {
     enabled: !!categorySlug,
   });
 };
+
+export const useAuthorsWithPostCount = () => {
+  return useQuery({
+    queryKey: ["authors-with-post-count"],
+    queryFn: async () => {
+      // Get all authors
+      const { data: authors, error: authorsError } = await supabase
+        .from("authors")
+        .select("*")
+        .order("name");
+
+      if (authorsError) throw authorsError;
+
+      // Get all published posts with their author_id
+      const { data: posts, error: postsError } = await supabase
+        .from("posts")
+        .select("id, author_id")
+        .eq("is_published", true);
+
+      if (postsError) throw postsError;
+
+      // Count posts per author
+      const authorsWithCount = authors?.map(author => ({
+        ...author,
+        postCount: posts?.filter(post => post.author_id === author.id).length || 0
+      }));
+
+      return authorsWithCount;
+    },
+  });
+};

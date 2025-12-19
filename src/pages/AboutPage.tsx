@@ -1,12 +1,11 @@
 import Layout from "@/components/layout/Layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { authors, posts } from "@/data/mockPosts";
+import { useAuthorsWithPostCount } from "@/hooks/usePosts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const AboutPage = () => {
-  const getAuthorPostCount = (authorId: string) => {
-    return posts.filter((post) => post.author.id === authorId && post.isPublished).length;
-  };
+  const { data: authors, isLoading } = useAuthorsWithPostCount();
 
   return (
     <Layout>
@@ -38,27 +37,50 @@ const AboutPage = () => {
 
         <div>
           <h2 className="font-display text-2xl font-bold mb-6">Meet Our Authors</h2>
-          <div className="grid sm:grid-cols-2 gap-6">
-            {authors.map((author) => (
-              <Card key={author.id} className="shadow-card border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage src={author.avatar} alt={author.name} />
-                      <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                        {author.name.split(" ").map((n) => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="font-display font-semibold text-lg">{author.name}</h3>
-                      <p className="text-sm text-accent mb-2">{getAuthorPostCount(author.id)} articles</p>
-                      <p className="text-sm text-muted-foreground">{author.bio}</p>
+          {isLoading ? (
+            <div className="grid sm:grid-cols-2 gap-6">
+              {[1, 2].map((i) => (
+                <Card key={i} className="shadow-card border-0">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <Skeleton className="h-16 w-16 rounded-full" />
+                      <div className="flex-1">
+                        <Skeleton className="h-5 w-32 mb-2" />
+                        <Skeleton className="h-4 w-20 mb-2" />
+                        <Skeleton className="h-4 w-full" />
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : authors && authors.length > 0 ? (
+            <div className="grid sm:grid-cols-2 gap-6">
+              {authors.map((author) => (
+                <Card key={author.id} className="shadow-card border-0">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={author.avatar_url || ""} alt={author.name} />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+                          {author.name.split(" ").map((n) => n[0]).join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-display font-semibold text-lg">{author.name}</h3>
+                        <p className="text-sm text-accent mb-2">
+                          {author.postCount} {author.postCount === 1 ? "article" : "articles"}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{author.bio}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No authors found.</p>
+          )}
         </div>
       </section>
     </Layout>
