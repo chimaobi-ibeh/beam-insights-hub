@@ -114,7 +114,7 @@ const AuthPage = () => {
 
   return (
     <Layout>
-      <div className="bg-hero py-12">
+      <div className="bg-hero-animated py-12">
         <div className="container">
           <h1 className="font-display text-3xl font-bold text-white">
             Editor <span className="text-accent">Dashboard</span>

@@ -235,7 +235,7 @@ const PostEditor = () => {
 
   return (
     <Layout>
-      <div className="bg-hero py-6">
+      <div className="bg-hero-animated py-6">
         <div className="container flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Button

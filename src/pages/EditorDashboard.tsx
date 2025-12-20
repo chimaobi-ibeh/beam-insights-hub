@@ -107,7 +107,7 @@ const EditorDashboard = () => {
   if (!isEditor) {
     return (
       <Layout>
-        <div className="bg-hero py-12">
+        <div className="bg-hero-animated py-12">
           <div className="container">
             <h1 className="font-display text-3xl font-bold text-white">Access Denied</h1>
           </div>
@@ -133,7 +133,7 @@ const EditorDashboard = () => {
 
   return (
     <Layout>
-      <div className="bg-hero py-8">
+      <div className="bg-hero-animated py-8">
         <div className="container flex justify-between items-center">
           <div>
             <h1 className="font-display text-2xl font-bold text-white">

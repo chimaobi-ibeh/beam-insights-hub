@@ -71,9 +71,13 @@ const PostPage = () => {
         readTime: post!.read_time || 5,
       };
 
-  const relatedPosts = useMock
+  const relatedMockPosts = useMock
     ? mockPosts.filter((p) => p.id !== mockPost!.id && p.isPublished).slice(0, 2)
-    : (allPosts || []).filter((p) => p.id !== post!.id).slice(0, 2);
+    : [];
+
+  const relatedDbPosts = !useMock
+    ? (allPosts || []).filter((p) => p.id !== post!.id).slice(0, 2)
+    : [];
 
   const formattedDate = new Date(postData.publishedAt).toLocaleDateString("en-US", {
     month: "long",
@@ -84,7 +88,7 @@ const PostPage = () => {
   return (
     <Layout>
       {/* Hero */}
-      <div className="bg-hero py-12 md:py-16">
+      <div className="bg-hero-animated py-12 md:py-16">
         <div className="container">
           <Link
             to="/"
@@ -186,40 +190,43 @@ const PostPage = () => {
         </div>
 
         {/* Related Posts */}
-        {relatedPosts.length > 0 && (
+        {(useMock ? relatedMockPosts : relatedDbPosts).length > 0 && (
           <section className="mt-16 pt-12 border-t border-border">
             <h2 className="font-display text-xl font-semibold mb-6">Related Articles</h2>
             <div className="grid sm:grid-cols-2 gap-6">
-              {relatedPosts.map((relatedPost: any) =>
-                useMock ? (
-                  <PostCard
-                    key={relatedPost.id}
-                    slug={relatedPost.slug}
-                    title={relatedPost.title}
-                    excerpt={relatedPost.excerpt}
-                    featuredImage={relatedPost.featuredImage}
-                    author={relatedPost.author}
-                    publishedAt={relatedPost.publishedAt}
-                    readTime={relatedPost.readTime}
-                    tags={relatedPost.tags}
-                  />
-                ) : (
-                  <PostCard
-                    key={relatedPost.id}
-                    slug={relatedPost.slug}
-                    title={relatedPost.title}
-                    excerpt={relatedPost.excerpt || ""}
-                    featuredImage={relatedPost.featured_image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop"}
-                    author={{
-                      name: relatedPost.authors?.name || "BeamX Team",
-                      avatar: relatedPost.authors?.avatar_url || undefined,
-                    }}
-                    publishedAt={relatedPost.published_at || relatedPost.created_at}
-                    readTime={relatedPost.read_time || 5}
-                    tags={relatedPost.tags || []}
-                  />
-                )
-              )}
+              {useMock
+                ? relatedMockPosts.map((relatedPost) => (
+                    <PostCard
+                      key={relatedPost.id}
+                      slug={relatedPost.slug}
+                      title={relatedPost.title}
+                      excerpt={relatedPost.excerpt}
+                      featuredImage={relatedPost.featuredImage}
+                      author={relatedPost.author}
+                      publishedAt={relatedPost.publishedAt}
+                      readTime={relatedPost.readTime}
+                      tags={relatedPost.tags}
+                    />
+                  ))
+                : relatedDbPosts.map((relatedPost) => (
+                    <PostCard
+                      key={relatedPost.id}
+                      slug={relatedPost.slug}
+                      title={relatedPost.title}
+                      excerpt={relatedPost.excerpt || ""}
+                      featuredImage={
+                        relatedPost.featured_image ||
+                        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop"
+                      }
+                      author={{
+                        name: relatedPost.authors?.name || "BeamX Team",
+                        avatar: relatedPost.authors?.avatar_url || undefined,
+                      }}
+                      publishedAt={relatedPost.published_at || relatedPost.created_at}
+                      readTime={relatedPost.read_time || 5}
+                      tags={relatedPost.tags || []}
+                    />
+                  ))}
             </div>
           </section>
         )}

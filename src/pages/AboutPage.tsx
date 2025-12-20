@@ -9,7 +9,7 @@ const AboutPage = () => {
 
   return (
     <Layout>
-      <div className="bg-hero py-16">
+      <div className="bg-hero-animated py-16">
         <div className="container">
           <h1 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
             About Our <span className="text-accent">Blog</span>

@@ -39,13 +39,13 @@ const PostCard = ({
 
   if (featured) {
     return (
-      <Card className="overflow-hidden shadow-card hover:shadow-lg transition-shadow duration-300 border-0">
+      <Card className="group overflow-hidden shadow-card border-0 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl motion-reduce:hover:translate-y-0">
         <div className="grid md:grid-cols-2 gap-0">
           <div className="aspect-video md:aspect-auto overflow-hidden">
             <img
               src={featuredImage}
               alt={title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out will-change-transform group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:transform-none"
             />
           </div>
           <CardContent className="p-6 md:p-8 flex flex-col justify-center">
@@ -97,12 +97,12 @@ const PostCard = ({
   }
 
   return (
-    <Card className="overflow-hidden shadow-card hover:shadow-lg transition-all duration-300 border-0 group">
+    <Card className="group overflow-hidden shadow-card border-0 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl motion-reduce:hover:translate-y-0">
       <div className="aspect-video overflow-hidden">
         <img
           src={featuredImage}
           alt={title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-700 ease-out will-change-transform group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:transform-none"
         />
       </div>
       <CardContent className="p-5">
@@ -117,7 +117,7 @@ const PostCard = ({
             </Badge>
           ))}
         </div>
-        <h3 className="font-display text-lg font-bold text-foreground mb-2 line-clamp-2">
+        <h3 className="font-display text-lg font-bold text-foreground mb-2 line-clamp-2 transition-colors duration-200 group-hover:text-accent">
           {title}
         </h3>
         <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{excerpt}</p>

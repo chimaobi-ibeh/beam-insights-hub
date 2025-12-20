@@ -38,7 +38,7 @@ const CategoryPage = () => {
 
   return (
     <Layout>
-      <div className="bg-hero py-16">
+      <div className="bg-hero-animated py-16">
         <div className="container">
           <Link 
             to="/categories" 
