@@ -18,15 +18,15 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signIn, signUp, user, isLoading } = useAuth();
+  const { signIn, signUp, user, isHydrated } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!isLoading && user) {
+    if (isHydrated && user) {
       navigate("/editor");
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isHydrated, navigate]);
 
   const validateInputs = (isSignUp: boolean) => {
     try {
@@ -65,14 +65,15 @@ const AuthPage = () => {
     if (error) {
       toast({
         title: "Sign In Failed",
-        description: error.message === "Invalid login credentials" 
-          ? "Invalid email or password. Please try again."
-          : error.message,
+        description:
+          error.message === "Invalid login credentials"
+            ? "Invalid email or password. Please try again."
+            : error.message,
         variant: "destructive",
       });
     } else {
       toast({ title: "Welcome back!", description: "You have signed in successfully." });
-      navigate("/editor");
+      // Navigation happens via the isHydrated+user effect to avoid role-loading flashes
     }
   };
 
@@ -98,11 +99,11 @@ const AuthPage = () => {
         title: "Account Created",
         description: "Your account has been created. Contact an admin to get editor access.",
       });
-      navigate("/editor");
+      // Navigation happens via the isHydrated+user effect
     }
   };
 
-  if (isLoading) {
+  if (!isHydrated) {
     return (
       <Layout>
         <div className="container py-20 flex items-center justify-center">

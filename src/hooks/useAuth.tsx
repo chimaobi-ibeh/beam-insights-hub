@@ -19,6 +19,8 @@ interface AuthContextType {
   isAdmin: boolean;
   isEditor: boolean;
   isLoading: boolean;
+  rolesLoaded: boolean;
+  isHydrated: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -31,6 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [rolesLoaded, setRolesLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
@@ -51,48 +54,63 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const fetchRoles = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
+    const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
 
     if (!error && data) {
       setRoles(data.map((r) => r.role as AppRole));
     } else {
       setRoles([]);
     }
+
+    setRolesLoaded(true);
+  };
+
+  const hydrateUserData = async (u: User) => {
+    setRolesLoaded(false);
+    await Promise.all([fetchProfile(u.id), fetchRoles(u.id)]);
   };
 
   useEffect(() => {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+
+      if (session?.user) {
+        // Ensure we don't show "Access Denied" while roles are still loading
+        setRolesLoaded(false);
+        setTimeout(() => {
+          fetchProfile(session.user.id);
+          fetchRoles(session.user.id);
+        }, 0);
+      } else {
+        setProfile(null);
+        setRoles([]);
+        setRolesLoaded(true);
+      }
+    });
+
+    // THEN check for existing session
+    supabase.auth
+      .getSession()
+      .then(async ({ data: { session } }) => {
         setSession(session);
         setUser(session?.user ?? null);
 
-        // Defer profile and roles fetch with setTimeout to avoid deadlock
         if (session?.user) {
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-            fetchRoles(session.user.id);
-          }, 0);
+          await hydrateUserData(session.user);
         } else {
-          setProfile(null);
-          setRoles([]);
+          setRolesLoaded(true);
         }
-      }
-    );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-        fetchRoles(session.user.id);
-      }
-      setIsLoading(false);
-    });
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setRolesLoaded(true);
+        setIsLoading(false);
+      });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -119,10 +137,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
     setProfile(null);
     setRoles([]);
+    setRolesLoaded(true);
   };
 
   const isAdmin = roles.includes("admin");
   const isEditor = isAdmin || roles.includes("editor");
+  const isHydrated = !isLoading && (!user || rolesLoaded);
 
   return (
     <AuthContext.Provider
@@ -134,6 +154,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAdmin,
         isEditor,
         isLoading,
+        rolesLoaded,
+        isHydrated,
         signIn,
         signUp,
         signOut,

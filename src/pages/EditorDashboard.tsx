@@ -28,7 +28,7 @@ interface Post {
 }
 
 const EditorDashboard = () => {
-  const { user, profile, isEditor, isAdmin, isLoading, signOut } = useAuth();
+  const { user, profile, isEditor, isAdmin, isHydrated, signOut } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
   const [stats, setStats] = useState({ posts: 0, authors: 0, categories: 0 });
@@ -36,10 +36,10 @@ const EditorDashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (isHydrated && !user) {
       navigate("/auth");
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isHydrated, navigate]);
 
   useEffect(() => {
     if (isEditor) {
@@ -94,7 +94,7 @@ const EditorDashboard = () => {
     navigate("/");
   };
 
-  if (isLoading) {
+  if (!isHydrated) {
     return (
       <Layout>
         <div className="container py-20 flex items-center justify-center">
@@ -104,7 +104,8 @@ const EditorDashboard = () => {
     );
   }
 
-  if (!isEditor) {
+  // Only show Access Denied once roles have definitely loaded
+  if (user && !isEditor) {
     return (
       <Layout>
         <div className="bg-hero-animated py-12">
@@ -118,9 +119,7 @@ const EditorDashboard = () => {
               <p className="text-muted-foreground mb-4">
                 You don't have editor access. Contact an administrator to get access.
               </p>
-              <p className="text-sm text-muted-foreground mb-4">
-                Logged in as: {profile?.email || user?.email}
-              </p>
+              <p className="text-sm text-muted-foreground mb-4">Logged in as: {profile?.email || user?.email}</p>
               <Button onClick={handleSignOut} variant="outline">
                 <LogOut className="h-4 w-4 mr-2" /> Sign Out
               </Button>
