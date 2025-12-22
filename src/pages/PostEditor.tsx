@@ -37,7 +37,7 @@ interface Category {
 const PostEditor = () => {
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
-  const { user, isEditor, isLoading } = useAuth();
+  const { user, isEditor, isHydrated } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -61,10 +61,10 @@ const PostEditor = () => {
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (isHydrated && !user) {
       navigate("/auth");
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isHydrated, navigate]);
 
   useEffect(() => {
     if (isEditor) {
@@ -224,7 +224,7 @@ const PostEditor = () => {
     }
   };
 
-  if (isLoading || postLoading) {
+  if (!isHydrated || postLoading) {
     return (
       <Layout>
         <div className="container py-20 flex items-center justify-center">
@@ -232,6 +232,11 @@ const PostEditor = () => {
         </div>
       </Layout>
     );
+  }
+
+  if (!user) {
+    navigate("/auth");
+    return null;
   }
 
   if (!isEditor) {
