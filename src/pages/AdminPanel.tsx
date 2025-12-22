@@ -56,7 +56,7 @@ interface Author {
 }
 
 const AdminPanel = () => {
-  const { user, isAdmin, isLoading } = useAuth();
+  const { user, isAdmin, isHydrated } = useAuth();
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [usersLoading, setUsersLoading] = useState(true);
   const [authors, setAuthors] = useState<Author[]>([]);
@@ -75,10 +75,10 @@ const AdminPanel = () => {
   const [savingAuthor, setSavingAuthor] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (isHydrated && !user) {
       navigate("/auth");
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isHydrated, navigate]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -263,7 +263,7 @@ const AdminPanel = () => {
     }
   };
 
-  if (isLoading) {
+  if (!isHydrated) {
     return (
       <Layout>
         <div className="container py-20 flex items-center justify-center">
