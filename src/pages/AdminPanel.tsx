@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Trash2, ArrowLeft, Users, Plus, Pencil } from "lucide-react";
+import { Shield, Trash2, ArrowLeft, Users, Plus, Pencil, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type AppRole = "admin" | "editor";
@@ -71,6 +71,7 @@ const AdminPanel = () => {
   const [authorSlug, setAuthorSlug] = useState("");
   const [authorBio, setAuthorBio] = useState("");
   const [authorAvatar, setAuthorAvatar] = useState("");
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [savingAuthor, setSavingAuthor] = useState(false);
 
   useEffect(() => {
@@ -187,6 +188,31 @@ const AdminPanel = () => {
   const handleAuthorNameChange = (value: string) => {
     setAuthorName(value);
     if (!editingAuthor) setAuthorSlug(generateSlug(value));
+  };
+
+  const uploadAuthorAvatar = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Error", description: "Please upload an image file", variant: "destructive" });
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `avatars/${fileName}`;
+
+    const { error } = await supabase.storage.from("blog-images").upload(filePath, file);
+
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      setIsUploadingAvatar(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("blog-images").getPublicUrl(filePath);
+    setAuthorAvatar(urlData.publicUrl);
+    setIsUploadingAvatar(false);
+    toast({ title: "Success", description: "Author avatar uploaded" });
   };
 
   const saveAuthor = async () => {
@@ -382,8 +408,48 @@ const AdminPanel = () => {
                     <Textarea id="author-bio" value={authorBio} onChange={(e) => setAuthorBio(e.target.value)} placeholder="Short bio about the author" rows={3} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="author-avatar">Avatar URL</Label>
-                    <Input id="author-avatar" value={authorAvatar} onChange={(e) => setAuthorAvatar(e.target.value)} placeholder="https://..." />
+                    <Label htmlFor="author-avatar">Avatar</Label>
+                    {authorAvatar && (
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={authorAvatar}
+                          alt={authorName || "Author avatar"}
+                          className="h-12 w-12 rounded-full object-cover border"
+                        />
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setAuthorAvatar("")}>
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                    <div className="flex gap-2 items-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById("author-avatar-upload")?.click()}
+                        disabled={isUploadingAvatar}
+                      >
+                        <Upload className="h-4 w-4 mr-1" />
+                        {isUploadingAvatar ? "Uploading..." : "Upload image"}
+                      </Button>
+                      <Input
+                        id="author-avatar"
+                        value={authorAvatar}
+                        onChange={(e) => setAuthorAvatar(e.target.value)}
+                        placeholder="Or paste an image URL"
+                      />
+                    </div>
+                    <input
+                      id="author-avatar-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) uploadAuthorAvatar(file);
+                        e.target.value = "";
+                      }}
+                    />
                   </div>
                   <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={() => setAuthorDialogOpen(false)}>Cancel</Button>
