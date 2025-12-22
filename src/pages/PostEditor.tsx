@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { format } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -17,7 +20,8 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Eye, Upload, X, ImageIcon } from "lucide-react";
+import { ArrowLeft, Save, Eye, X, ImageIcon, CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/editor/RichTextEditor";
 
 interface Author {
@@ -47,6 +51,7 @@ const PostEditor = () => {
   const [tags, setTags] = useState("");
   const [readTime, setReadTime] = useState(5);
   const [isPublished, setIsPublished] = useState(false);
+  const [publishDate, setPublishDate] = useState<Date | undefined>(undefined);
 
   const [authors, setAuthors] = useState<Author[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -104,6 +109,7 @@ const PostEditor = () => {
     setTags((data.tags || []).join(", "));
     setReadTime(data.read_time || 5);
     setIsPublished(data.is_published);
+    setPublishDate(data.published_at ? new Date(data.published_at) : undefined);
     setPostLoading(false);
   };
 
@@ -191,7 +197,7 @@ const PostEditor = () => {
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       read_time: readTime,
       is_published: isPublished,
-      published_at: isPublished ? new Date().toISOString() : null,
+      published_at: isPublished ? (publishDate ? publishDate.toISOString() : new Date().toISOString()) : null,
     };
 
     let error;
@@ -336,6 +342,32 @@ const PostEditor = () => {
                     checked={isPublished}
                     onCheckedChange={setIsPublished}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label>Publish Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !publishDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {publishDate ? format(publishDate, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={publishDate}
+                        onSelect={setPublishDate}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </CardContent>
             </Card>
