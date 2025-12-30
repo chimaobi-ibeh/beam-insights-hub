@@ -197,7 +197,7 @@ const PostEditor = () => {
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       read_time: readTime,
       is_published: isPublished,
-      published_at: isPublished ? (publishDate ? publishDate.toISOString() : new Date().toISOString()) : null,
+      published_at: isPublished ? (publishDate?.toISOString() ?? new Date().toISOString()) : null,
     };
 
     let error;
