@@ -232,7 +232,9 @@ const EditorDashboard = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {new Date(post.created_at).toLocaleDateString()}
+                        {post.published_at 
+                          ? new Date(post.published_at).toLocaleDateString()
+                          : new Date(post.created_at).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
