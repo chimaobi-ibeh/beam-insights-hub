@@ -368,6 +368,7 @@ const PostEditor = () => {
                         mode="single"
                         selected={publishDate}
                         onSelect={setPublishDate}
+                        defaultMonth={publishDate}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
                       />
