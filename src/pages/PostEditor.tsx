@@ -183,6 +183,14 @@ const PostEditor = () => {
       toast({ title: "Error", description: "Slug is required", variant: "destructive" });
       return;
     }
+    if (isPublished && !publishDate) {
+      toast({
+        title: "Publish date required",
+        description: "Please select a publish date before publishing.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsSaving(true);
 
@@ -197,7 +205,7 @@ const PostEditor = () => {
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       read_time: readTime,
       is_published: isPublished,
-      published_at: isPublished ? (publishDate?.toISOString() ?? new Date().toISOString()) : null,
+      published_at: isPublished ? publishDate!.toISOString() : null,
     };
 
     let error;
