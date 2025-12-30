@@ -40,7 +40,7 @@ export const usePublishedPosts = () => {
           categories(id, name, slug)
         `)
         .eq("is_published", true)
-        .order("published_at", { ascending: false });
+        .order("published_at", { ascending: false, nullsFirst: false });
 
       if (error) throw error;
       return data as PostWithAuthor[];
@@ -157,7 +157,7 @@ export const usePostsByCategory = (categorySlug: string) => {
         `)
         .eq("category_id", category.id)
         .eq("is_published", true)
-        .order("published_at", { ascending: false });
+        .order("published_at", { ascending: false, nullsFirst: false });
 
       if (postsError) throw postsError;
 
