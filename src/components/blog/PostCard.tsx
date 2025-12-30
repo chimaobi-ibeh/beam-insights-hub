@@ -131,10 +131,16 @@ const PostCard = ({
             </Avatar>
             <span className="text-xs font-medium">{author.name}</span>
           </div>
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            {readTime} min
-          </span>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {formattedDate}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {readTime} min
+            </span>
+          </div>
         </div>
         <Button asChild variant="outline" size="sm" className="w-full">
           <Link to={`/post/${slug}`}>

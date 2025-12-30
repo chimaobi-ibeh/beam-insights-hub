@@ -52,7 +52,7 @@ const EditorDashboard = () => {
     const { data, error } = await supabase
       .from("posts")
       .select("id, title, slug, is_published, published_at, created_at, authors(name)")
-      .order("created_at", { ascending: false });
+      .order("published_at", { ascending: false, nullsFirst: false });
 
     if (error) {
       console.error("Error fetching posts:", error);
