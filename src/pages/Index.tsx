@@ -6,7 +6,7 @@ import PostCard from "@/components/blog/PostCard";
 import { usePublishedPosts, PostWithAuthor } from "@/hooks/usePosts";
 import { posts as mockPosts, Post as MockPost } from "@/data/mockPosts";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 const Index = () => {
   const { data: dbPosts, isLoading } = usePublishedPosts();
@@ -96,8 +96,17 @@ const Index = () => {
             placeholder="Search articles by title, content, or tags..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-14 text-base rounded-xl border-2 border-border/50 bg-background shadow-sm focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+            className="pl-12 pr-12 h-14 text-base rounded-xl border-2 border-border/50 bg-background shadow-sm focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-4 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full bg-muted hover:bg-muted-foreground/20 transition-colors"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+          )}
         </div>
 
         {isLoading ? (
