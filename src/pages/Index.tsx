@@ -89,14 +89,14 @@ const Index = () => {
 
       <section className="container py-12">
         {/* Search Bar */}
-        <div className="relative max-w-md mx-auto mb-10">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative max-w-2xl mx-auto mb-12">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search articles by title, content, or tags..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-12 h-14 text-base rounded-xl border-2 border-border/50 bg-background shadow-sm focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
           />
         </div>
 
