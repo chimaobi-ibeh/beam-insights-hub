@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,11 +7,18 @@ import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { usePost, usePublishedPosts } from "@/hooks/usePosts";
 import { posts as mockPosts } from "@/data/mockPosts";
 import PostCard from "@/components/blog/PostCard";
+import ShareButtons from "@/components/blog/ShareButtons";
 
 const PostPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
   const { data: post, isLoading } = usePost(slug || "");
   const { data: allPosts } = usePublishedPosts();
+  
+  // Build the full URL for sharing
+  const fullUrl = typeof window !== "undefined" 
+    ? `${window.location.origin}${location.pathname}` 
+    : "";
 
   // Fallback to mock data if no database post found
   const mockPost = mockPosts.find((p) => p.slug === slug);
@@ -148,6 +155,15 @@ const PostPage = () => {
 
           {/* Sidebar */}
           <aside className="lg:col-span-1">
+            {/* Share Buttons */}
+            <div className="bg-card rounded-lg p-6 shadow-card mb-8">
+              <ShareButtons 
+                url={fullUrl} 
+                title={postData.title} 
+                excerpt={postData.excerpt} 
+              />
+            </div>
+
             {/* Author Card */}
             <div className="bg-card rounded-lg p-6 shadow-card mb-8">
               <h3 className="font-display font-semibold mb-4">About the Author</h3>
