@@ -1,4 +1,4 @@
-import { Twitter, Linkedin, Facebook, Link2, Check } from "lucide-react";
+import { Linkedin, Facebook, Link2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -46,9 +46,11 @@ const ShareButtons = ({ url, title, excerpt }: ShareButtonsProps) => {
           size="icon"
           onClick={() => openShareWindow(shareLinks.twitter)}
           className="h-10 w-10 rounded-full hover:bg-accent hover:text-accent-foreground hover:border-accent transition-colors"
-          aria-label="Share on Twitter"
+          aria-label="Share on X"
         >
-          <Twitter className="h-4 w-4" />
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
         </Button>
         <Button
           variant="outline"
